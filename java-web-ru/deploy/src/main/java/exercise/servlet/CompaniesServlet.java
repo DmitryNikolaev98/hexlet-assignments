@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import static exercise.Data.getCompanies;
@@ -20,28 +19,25 @@ public class CompaniesServlet extends HttpServlet {
                 throws IOException, ServletException {
 
         // BEGIN
-        String searchValue = request.getParameter("search");
         PrintWriter out = response.getWriter();
-        List<String> compaines = getCompanies();
-        if (searchValue == null || searchValue.isEmpty()) {
-            for (String compain : compaines) {
-                out.println(compain);
-            }
-            return;
-        }
 
-        compaines = compaines.stream()
-                .filter(x -> x.contains(searchValue))
+        List<String> companies = getCompanies();
+
+        String searchString = request.getParameter("search") == null
+                ? ""
+                : request.getParameter("search");
+
+        List<String> filteredCompanies = companies
+                .stream()
+                .filter(company -> company.contains(searchString))
                 .collect(Collectors.toList());
 
-        if (compaines.isEmpty()) {
+        if (filteredCompanies.isEmpty()) {
             out.println("Companies not found");
             return;
         }
 
-        for (String compain : compaines) {
-            out.println(compain);
-        }
+        filteredCompanies.forEach(company -> out.println(company));
         // END
     }
 }
